@@ -56,16 +56,9 @@ namespace EntityFramework.BulkExtensions
             var tableMappings = new Dictionary<Type, IEntityMap>();
             foreach (var type in allTypes)
             {
-                try
-                {
-                    var tableMapping = context.Db(type);
-                    tableMappings[type] = tableMapping;
-                }
-                catch
-                {
-                    // todo - catch only EntityTypeNoFoundException when mapping api is upgraded
-                    // Maybe these derived types are not used. Throw when invalid type is used while reading.
-                }
+                
+                var tableMapping = context.Db(type);
+                tableMappings[type] = tableMapping;
             }
 
             if (tableMappings.Count == 0)

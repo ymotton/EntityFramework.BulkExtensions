@@ -186,7 +186,7 @@ namespace EntityFramework.BulkExtensions
                     string theirTypeName;
                     RelationshipMultiplicity ourMultiplicity;
                     RelationshipMultiplicity theirMultiplicity;
-                    if (entityName == rightTypeName)
+                    if (entityName == rightTypeName || entityName + "s" == rightTypeName)
                     {
                         theirTypeName = leftTypeName;
                         ourMultiplicity = rightMultiplicity;

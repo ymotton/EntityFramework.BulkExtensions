@@ -49,6 +49,9 @@ namespace EntityFrameworkBulkExtensions.Tests
         {
             var context = new FooContext();
 
+            context.As.Add(new A());
+            context.SaveChanges();
+
             var items = Enumerable.Range(0, 1000).Select(x => new A()).ToList();
             context.As.AddRange(items);
             context.BulkSaveAdditions();
@@ -59,6 +62,8 @@ namespace EntityFrameworkBulkExtensions.Tests
             Assert.IsTrue(EntityExistsInDatabase(items.First()));
             Assert.IsTrue(EntityExistsInDatabase(items.Last()));
 
+            context.As.Add(new A());
+            context.SaveChanges();
         }
 
         private bool EntityExistsInDatabase<T>(T t) where T : Entity
