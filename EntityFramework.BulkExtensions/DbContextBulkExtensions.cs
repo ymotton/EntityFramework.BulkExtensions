@@ -14,14 +14,14 @@ namespace EntityFramework.BulkExtensions
         {
             GuardAgainstOtherChanges(context);
 
-            var addedEntities = ((IObjectContextAdapter) context)
-                .ObjectContext
-                .ObjectStateManager
-                .GetObjectStateEntries(EntityState.Added)
-                .Where(e => e.EntityKey != null)
-                .ToList();
+            var addedEntries = ((IObjectContextAdapter) context)
+                    .ObjectContext
+                    .ObjectStateManager
+                    .GetObjectStateEntries(EntityState.Added)
+                    .Where(e => e.EntityKey != null)
+                    .ToList();
 
-            var entitiesPerType = addedEntities
+            var entitiesPerType = addedEntries
                 .GroupBy(EntityKey.Create, e => e.Entity)
                 .ToList();
 
@@ -33,6 +33,8 @@ namespace EntityFramework.BulkExtensions
                 context.BulkInsert(entities);
                 count += entities.Count;
             }
+
+            addedEntries.ForEach(x => x.AcceptChanges());
 
             return count;
         }
@@ -106,8 +108,7 @@ namespace EntityFramework.BulkExtensions
 
             if (nodesWithIncomingEdges.Any())
             {
-                Console.WriteLine("Nodes that cannot be ordered: {{{0}}}",
-                    string.Join(", ", nodesWithIncomingEdges.Select(n => n.Name)));
+                sortedNodes.AddRange(nodesWithIncomingEdges);
             }
 
             var entitiesPerTypeLookup = entitiesPerType.ToDictionary(g => g.Key, g => g);

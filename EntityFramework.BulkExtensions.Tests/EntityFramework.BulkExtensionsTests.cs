@@ -33,7 +33,7 @@ namespace EntityFrameworkBulkExtensions.Tests
             context.Hs.Add(h);
 
             context.BulkSaveAdditions();
-
+            
             Assert.IsTrue(EntityExistsInDatabase(a));
             Assert.IsTrue(EntityExistsInDatabase(b));
             Assert.IsTrue(EntityExistsInDatabase(c));
@@ -44,11 +44,28 @@ namespace EntityFrameworkBulkExtensions.Tests
             Assert.IsTrue(EntityExistsInDatabase(h));
         }
 
+        [TestMethod]
+        public void BulkSaveAdditions_ResetsChanges_SoConsecutiveCallDoesNothing()
+        {
+            var context = new FooContext();
+
+            var items = Enumerable.Range(0, 1000).Select(x => new A()).ToList();
+            context.As.AddRange(items);
+            context.BulkSaveAdditions();
+            Assert.IsTrue(EntityExistsInDatabase(items.First()));
+            Assert.IsTrue(EntityExistsInDatabase(items.Last()));
+
+            context.BulkSaveAdditions();
+            Assert.IsTrue(EntityExistsInDatabase(items.First()));
+            Assert.IsTrue(EntityExistsInDatabase(items.Last()));
+
+        }
+
         private bool EntityExistsInDatabase<T>(T t) where T : Entity
         {
             using (var context = new FooContext())
             {
-                return context.Set<T>().Any(x => x.Id == t.Id);
+                return context.Set<T>().Single(x => x.Id == t.Id) != null;
             }
         }
     }
